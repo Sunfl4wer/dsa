@@ -1,6 +1,6 @@
 package chapter3.linkedlist;
 
-public class DoublyLinkedList<E> implements Cloneable{
+public class CircularDoublyLinkedList<E> {
   protected static class Node<E> {
     private E element;
     private Node<E> next;
@@ -34,15 +34,10 @@ public class DoublyLinkedList<E> implements Cloneable{
     }
   }
 
-  private Node<E> header;
-  private Node<E> trailer;
+  private Node<E> tail;
   private int size = 0;
 
-  public DoublyLinkedList() {
-    header = new Node<E>(null, null, null);
-    trailer = new Node<E>(null, null, header);
-    header.setNext(trailer);
-    trailer.setPrev(header);
+  public CircularDoublyLinkedList() {
   }
 
   public int size() {
@@ -57,30 +52,39 @@ public class DoublyLinkedList<E> implements Cloneable{
     if (isEmpty()) {
       return null;
     }
-    return header.getNext().getElement();
+    return tail.getNext().getElement();
   }
 
   public E last() {
     if (isEmpty()) {
       return null;
     }
-    return trailer.getPrev().getElement();
+    return tail.getElement();
   }
 
   public void addFirst(E element) {
-    addBetween(element, header, header.getNext());
+    if (isEmpty()) {
+      tail = new Node<E>(element, null, null);
+      tail.setNext(tail);
+      tail.setPrev(tail);
+      size++;
+    } else {
+      addBetween(element, tail, tail.getNext());
+    }
   }
 
   public void addLast(E element) {
-    addBetween(element, trailer.getPrev(), trailer);
+    addFirst(element);
+    tail = tail.getNext();
   }
 
   public E removeFirst() {
-    return remove(header.getNext());
+    return remove(tail.getNext());
   }
 
   public E removeLast() {
-    return remove(trailer.getPrev());
+    tail = tail.getPrev();
+    return removeFirst();
   }
 
   public void addBetween(final E element,
@@ -99,8 +103,23 @@ public class DoublyLinkedList<E> implements Cloneable{
     Node<E> predecessor = node.getPrev();
     Node<E> successor = node.getNext();
     successor.setPrev(predecessor);
+    predecessor.setNext(successor);
     size--;
     return node.getElement();
+  }
+
+  public void rotate() {
+    if (isEmpty()) {
+      return;
+    }
+    tail = tail.getNext();
+  }
+
+  public void rotateBackward() {
+    if (isEmpty()) {
+      return;
+    }
+    tail = tail.getPrev();
   }
 
   @Override
@@ -108,43 +127,27 @@ public class DoublyLinkedList<E> implements Cloneable{
     if (object == null || getClass() != object.getClass()) {
       return false;
     }
-    DoublyLinkedList other = (DoublyLinkedList) object;
+    CircularDoublyLinkedList other = (CircularDoublyLinkedList) object;
     if (size != other.size) {
       return false;
     }
-    Node thisNodeForward = header.getNext();
-    Node otherNodeForward = other.header.getNext();
-    while(thisNodeForward != trailer) {
+    Node thisNodeForward = tail.getNext();
+    Node otherNodeForward = other.tail.getNext();
+    while(thisNodeForward != tail) {
       if(thisNodeForward.getElement() != otherNodeForward.getElement()) {
         return false;
       }
       thisNodeForward = thisNodeForward.getNext();
     }
-    Node thisNodeBackward = trailer.getPrev();
-    Node otherNodeBackward = other.trailer.getPrev();
-    while(thisNodeBackward != header) {
+    Node thisNodeBackward = tail.getPrev();
+    Node otherNodeBackward = other.tail.getPrev();
+    while(thisNodeBackward != tail) {
       if(thisNodeBackward.getElement() != otherNodeBackward.getElement()) {
         return false;
       }
       thisNodeBackward = thisNodeBackward.getPrev();
     }
-    return true;
-  }
-
-  @Override
-  public DoublyLinkedList<E> clone() throws CloneNotSupportedException {
-    DoublyLinkedList<E> cloned = (DoublyLinkedList<E>)super.clone();
-    cloned.size = 0;
-    cloned.header = new Node<E>(null, null, null);
-    cloned.trailer = new Node<E>(null, null, header);
-    cloned.header.setNext(cloned.trailer);
-    cloned.trailer.setPrev(cloned.header);
-    Node<E> node = header.getNext();
-    while (node != trailer) {
-      cloned.addLast(node.getElement());
-      node = node.getNext();
-    }
-    return cloned;
+    return other.tail.getElement() == tail.getElement();
   }
 
   @Override
@@ -152,12 +155,13 @@ public class DoublyLinkedList<E> implements Cloneable{
     StringBuilder sb = new StringBuilder();
     sb.append("[");
     if (!isEmpty()) {
-      Node<E> node = header.getNext();
-      while (node != trailer) {
+      Node<E> node = tail.getNext();
+      while (node != tail) {
         sb.append(node.getElement().toString());
         sb.append(" ");
         node = node.getNext();
       }
+      sb.append(tail.element.toString());
     }
     sb.append("]");
     return sb.toString();
