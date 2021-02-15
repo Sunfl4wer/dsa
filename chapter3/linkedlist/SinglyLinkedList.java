@@ -27,6 +27,29 @@ public class SinglyLinkedList<E> extends LinkedList<E> implements Cloneable {
     return tail.getElement();
   }
 
+  public E getValueAt(final int index) {
+    if (isEmpty() || index > size-1) {
+      return null;
+    }
+    Node<E> node = head;
+    for (int i = 0; i < index; i++) {
+      node = node.getNext();
+    }
+    return node.getElement();
+  }
+
+  public void setValueAt(final int index,
+                         final E element) {
+    if (isEmpty() || index > size-1) {
+      throw new IndexOutOfBoundsException();
+    }
+    Node<E> node = head;
+    for (int i = 0; i < index; i++) {
+      node = node.getNext();
+    }
+    node.setElement(element);
+  }
+
   public void addFirst(final E element) {
     head = new Node<>(element, head);
     if (size == 0) {

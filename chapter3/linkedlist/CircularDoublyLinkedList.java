@@ -40,6 +40,12 @@ public class CircularDoublyLinkedList<E> {
   public CircularDoublyLinkedList() {
   }
 
+  public CircularDoublyLinkedList(final E[] data) {
+    for (int i = 0; i < data.length; i++) {
+      addLast(data[i]);
+    }
+  }
+
   public int size() {
     return this.size;
   }

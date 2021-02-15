@@ -14,6 +14,10 @@ public abstract class LinkedList<E> {
       return element;
     }
 
+    public void setElement(final E element) {
+      this.element = element;
+    }
+
     public Node<E> getNext() {
       return next;
     }

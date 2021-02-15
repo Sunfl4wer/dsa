@@ -5,6 +5,12 @@ public class CircularlyLinkedList<E> extends LinkedList<E> implements Cloneable 
   private int size = 0;
   public CircularlyLinkedList() {}
 
+  public CircularlyLinkedList(final E[] data) {
+    for (int i = 0; i < data.length; i++) {
+      addLast(data[i]);
+    }
+  }
+
   public int size() {
     return size;
   }

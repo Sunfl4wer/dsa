@@ -45,6 +45,16 @@ public class DoublyLinkedList<E> implements Cloneable{
     trailer.setPrev(header);
   }
 
+  public DoublyLinkedList(final E[] data) {
+    header = new Node<E>(null, null, null);
+    trailer = new Node<E>(null, null, header);
+    header.setNext(trailer);
+    trailer.setPrev(header);
+    for (int i = 0; i < data.length; i++) {
+      this.addLast(data[i]);
+    }
+  }
+
   public int size() {
     return this.size;
   }
